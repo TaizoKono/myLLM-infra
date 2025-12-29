@@ -256,6 +256,25 @@ class NetworkStack(Stack):
 
         Tags.of(private_nacl).add("Name", "WireGuardPrivateNACL")
 
+        # Gateway VPC Endpoints (no additional cost)
+        # S3 endpoint for accessing S3 buckets from private subnets
+        self.vpc.add_gateway_endpoint(
+            "S3Endpoint",
+            service=ec2.GatewayVpcEndpointAwsService.S3,
+            subnets=[ec2.SubnetSelection(
+                subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
+            )],
+        )
+
+        # DynamoDB endpoint for accessing DynamoDB from private subnets
+        self.vpc.add_gateway_endpoint(
+            "DynamoDBEndpoint",
+            service=ec2.GatewayVpcEndpointAwsService.DYNAMODB,
+            subnets=[ec2.SubnetSelection(
+                subnet_type=ec2.SubnetType.PRIVATE_ISOLATED
+            )],
+        )
+
         CfnOutput(
             self,
             "VpcId",
